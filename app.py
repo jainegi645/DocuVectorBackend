@@ -7,8 +7,14 @@ from transformers import pipeline
 import torch 
 import pdfplumber 
 import os
+from flask_cors import CORS
+from flask import send_from_directory
+
+
+
 
 app = Flask(__name__)
+CORS(app)  # Allow only your frontend
 # embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/multi-qa-mpnet-base-cos-v1",
@@ -40,6 +46,7 @@ def ingest_pdf():
 
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(file_path)
+    print(f"File saved to: {file_path}")  # Debug log
 
     try:
         with pdfplumber.open(file_path) as pdf:
@@ -81,6 +88,10 @@ def query_pdf():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/data/<path:filename>')
+def serve_pdf(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=False)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, use_reloader=False)
