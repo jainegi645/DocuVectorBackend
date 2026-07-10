@@ -1,8 +1,23 @@
-flask==3.0.0
-langchain==0.1.0
-sentence-transformers==2.6.1
+
+# Web Framework
+fastapi==0.104.0
+uvicorn==0.24.0
+python-multipart==0.0.6
+
+# LangChain + Integrations
+langchain>=0.1.0
+langchain-groq>=0.1.0
+langchain-community>=0.0.10
+
+# Vector Search & Embeddings
 faiss-cpu==1.7.4
+sentence-transformers==2.6.1
+torch==2.3.0
+
+# PDF Processing
 pdfplumber==0.10.2
+pypdf==3.17.0
+
+# Utilities
 numpy==1.26.4
-transformers==4.40.2
-torch==2.3.0  # For CPU; use GPU version if available
+python-dotenv==1.0.0
