@@ -59,7 +59,6 @@ async def ingest_pdf(file: UploadFile = File(...), rag_service: RAGService = Dep
             os.remove(file_path)
         raise HTTPException(status_code=500, detail=f"Error processing pdf: {str(e)}")
 
-    
 
 @router.post("/query", response_model=QueryResponse)
 async def query(request: QueryRequest, rag_service: RAGService = Depends(get_rag_service)):
@@ -77,11 +76,13 @@ async def query(request: QueryRequest, rag_service: RAGService = Depends(get_rag
     except Exception as e:
         raise HTTPException(status_code=500, details=f"Error processing query: {str(e)}")
 
+
 @router.get("/documents")
 async def list_documents(rag_service: RAGService = Depends(get_rag_service)):
     """List all ingested documents with metadata."""
     # TODO: Implement document listing
     pass
+
 
 @router.delete("/documents/{filename}")
 async def delete_document(filename: str, rag_service: RAGService = Depends(get_rag_service)):

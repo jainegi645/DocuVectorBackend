@@ -107,13 +107,13 @@ class RAGService:
             if not relevant_docs:
                 return {
                     "response": "I could not find any relevant information to anser your question",
-                    "source": [],
+                    "sources": [],
                 }
-            
-             # Build context from retrieved documents
+
+            # Build context from retrieved documents
             context = "\n\n".join([doc.page_content for doc in relevant_docs])
-             
-            #Create prompt with context and question
+
+            # Create prompt with context and question
             prompt_template = """Use the following pieces of context to answer the question at the end. 
             If you don't know the answer, just say that you don't know, don't try to make up an answer.
             
@@ -122,26 +122,33 @@ class RAGService:
             Question: {question}
             Helpful Answer:"""
 
-            #Format the Prompt
+            # Format the Prompt
             prompt = prompt_template.format(context=context, question=query)
 
-            #Generate response using LLM
+            # Generate response using LLM
             response = self.llm.invoke(prompt)
 
-            #extract just the text response (remove any metadata)
-            if hasattr(response, 'content'):
+            # extract just the text response (remove any metadata)
+            if hasattr(response, "content"):
                 response_text = response.content
             else:
                 response_text = str(response)
 
-                
-            # TODO: Format and return response
+            # Prepare source information
+            sources = []
+            for doc in relevant_docs:
+                sources.append(
+                    {
+                        "file": doc.metadata.get("source", "unknown"),
+                        "page": doc.metadata.get("page", 0),
+                    }
+                )
 
-            return {"response": "", "source": []}
+            return {"response": response_text.strip(), "sources": sources}
         except Exception as e:
             logging.error(f"Error querying: {e}")
             return {
                 "response": "An error ouccured with procdssing your query",
-                "source": [],
+                "sources": [],
                 "error": str(e),
             }
